@@ -5,6 +5,8 @@ use Font::FreeType;
 use charnames ();
 use Data::Dump::Streamer;
 
+binmode \*STDOUT, ":utf8";
+
 # LIMITATIONS:
 #  - No support for right-to-left characters.
 
@@ -17,18 +19,58 @@ my $nominal_res = 254;
 my $PI = 2*atan2(1,0);
 
 $face->set_char_size($nominal_size, $nominal_size, $nominal_res, $nominal_res);
+my @glyphs;
+
+$face->foreach_char( sub {
+                       push @glyphs, $_;
+                     } );
+
+print "module by_codepoint(codepoint) {\n";
+#print " if (0) {\n";
+#print " }\n";
+
+print by_codepoint_generator(0, $#glyphs, 1), "\n";
+# $face->foreach_char(sub {
+#                       my $glyph = $_;
+#                       my $code = $glyph->char_code;
+#                       my $name = module_name($glyph);
+                      
+#                       print " else if (codepoint == $code)\n";
+#                       print "  $name();\n";
+#                     });
+#print qq< else\n>;
+#print qq<  echo("FIXME: unknown codepoint to by_codepoint", codepoint);\n>;
+print "}\n\n";
+
+print "module by_char(char) {\n";
+print " if (0) {\n";
+print " }\n";
+$face->foreach_char(sub {
+                      my $glyph = $_;
+                      my $char = chr($glyph->char_code);
+                      if ($char eq '"') {
+                        return;
+                      }
+                      my $name = module_name($glyph);
+                      
+                      print " else if (char == \"$char\")\n";
+                      print "  $name();\n";
+                    });
+print " else";
+print qq<  echo("FIXME: unknown char to by_char", char);\n>;
+print "}\n\n";
 
 $face->foreach_char(sub {
                       my $glyph = $_;
                       
                       printf "// U+%x -- %s\n", $glyph->char_code, charnames::viacode($glyph->char_code) || $glyph->name;
 
+                      my $module_name = module_name($glyph);
+
+
                       # This origin to next origin, always positive.  FIXME: This is what breaks right-to-left.
                       printf "// Horizontal advance: %d\n", $glyph->horizontal_advance;
 
-                      my $module_name = charnames::viacode($glyph->char_code) || $glyph->name;
-                      $module_name =~ s/ /_/g;
-                      $module_name =~ s/-/_/g;
                       print "module $module_name() {\n";
 
                       my ($state) = {};
@@ -63,6 +105,34 @@ $face->foreach_char(sub {
                       print " translate([", $glyph->horizontal_advance, ", 0, 0]) child(0);\n";
                       print "}\n\n";
 });
+
+sub by_codepoint_generator {
+  my ($low_glyphindex, $high_glyphindex, $indent) = @_;
+
+  my $this_indent = " " x $indent;
+  if($high_glyphindex == $low_glyphindex) {
+    return $this_indent . module_name($glyphs[$high_glyphindex])."(); // CP = " 
+      . $glyphs[$high_glyphindex]->char_code;
+  } else {
+    my $mid_glyphindex = int (($high_glyphindex + $low_glyphindex) / 2);
+
+    return
+      $this_indent .  "if(codepoint <= " . $glyphs[$mid_glyphindex]->char_code . ") \n"
+    . by_codepoint_generator($low_glyphindex, $mid_glyphindex, $indent + 1) . "\n"
+    . $this_indent .  "else\n"
+    . by_codepoint_generator($mid_glyphindex+1, $high_glyphindex, $indent + 1);
+  } 
+}
+
+sub module_name {
+  my ($glyph) = @_;
+  
+  my $module_name = charnames::viacode($glyph->char_code) || $glyph->name;
+  $module_name =~ s/ /_/g;
+  $module_name =~ s/-/_/g;
+
+  return $module_name;
+}
 
 sub assign_coded_point {
   my ($state, $x, $y) = @_;
