@@ -1,18 +1,24 @@
 include <impact.scad>
-$fa = 1;
-$fs = 0.125;
 
 // Location where the sundial will be placed, tz it should read out in.
+// FIXME: Southern hemisphere not yet supported
 latitude = 51.5844;
 longitude = -1.7415;
 timezone = 0;
 
 // The flat portion of the disk
 base_height = 1;
-base_dia = 80;
+// The hour-based portion of the disk
+base_dia = 100;
+// The extra width of the portion of the disk that shows directions.
+direction_margin = 0;
+
 
 // The style, the bit that points upward.
-style_dia = 4;
+style_id = 5;
+style_wall = 4;
+style_od = style_id + style_wall*2;
+style_len = style_id * 3;
 
 // Markings on the disk
 hour_mark_dia = 4;
@@ -24,28 +30,29 @@ number_shift = hour_mark_dia/2;
 
 // The base.
 translate([0, 0, -base_height])
- cylinder(h=base_height, r=base_dia/2);
+ cylinder(h=base_height, r=base_dia/2+direction_margin);
 
-// The style, flat at latitude=0 (equator), straight up at the poles.
 intersection () {
  union() {
+
+  // The style, flat at latitude=0 (equator), straight up at the poles.
   rotate(a=latitude, v=[1, 0, 0])
    rotate(a=-90, v=[1,0,0])
     translate([0, 0, -base_height])
-     cylinder(r1=style_dia/2, r2=style_dia/2, h=base_dia/2);
+     difference () {
+      cylinder(r=style_od/2, h=style_len);
+      cylinder(r=style_id/2, h=style_len+2);
+     }
 
 
   // Hour lines (and labels)
   for (hour = [3:20]) {
-   echo("hour: ", hour);
-   echo("<6: ", hour <= 6);
-
    rotate(a=time_angle(hour), v=[0,0,1]) {
     rotate(a=-90, v=[1,0,0])
      cylinder(r1=0, r2=hour_mark_dia/2, h=base_dia/2);
     
-    translate([number_shift, base_dia/2-3, 0])
-     scale([0.1, 0.1, number_height])
+    translate([number_shift, base_dia/2-7, 0])
+     scale([0.2, 0.2, number_height])
       linear_extrude(height=1, convexity=10)
        number(hour);
    }
@@ -55,7 +62,7 @@ intersection () {
   for (hour = [3:20]) {
    rotate(a=time_angle(hour+0.5), v=[0,0,1]) {
 
-    translate([0, base_dia/2-15, 0])
+    translate([0, base_dia/2-20, 0])
      rotate(a=-90, v=[1,0,0])
       cylinder(r1=0, r2=half_hour_mark_dia/2, h=10);
    }
@@ -65,6 +72,7 @@ intersection () {
  // Keeps the style from poking out the bottom.  Commented out because openscad won't render correctly on displays without opengl 2.0.
  cylinder(r=base_dia/2, h=1000);
 }
+
 
 
 function time_angle(hour) =
