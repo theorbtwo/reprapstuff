@@ -9,7 +9,7 @@ bottom_height = 0;
 
 full_height = top_height+centre_height+bottom_height;
 
-rim_width = 2;
+rim_width = 2.5;
 
 coin_dia = 34;
 logo_scale = 3.5;
@@ -20,7 +20,7 @@ difference () {
  difference () {
   cylinder(h=full_height, r=coin_dia/2+1);
   translate([0, 0, -0.5])
-   cylinder(h=full_height+1, r=coin_dia/5+0.7);
+   cylinder(h=full_height+1, r=coin_dia/5+3);
  }
 }
 
@@ -28,7 +28,7 @@ difference () {
 difference () {
  cylinder(h=full_height, r=coin_dia/2);
  translate([0, 0, -0.5])
-  cylinder(h=full_height+1, r=coin_dia/2-rim_width);
+  cylinder(h=full_height+1, r2=coin_dia/2-rim_width, r1=coin_dia/2-rim_width*2);
 }
 
 cylinder(h=centre_height, r = coin_dia/2, center = true);
@@ -82,6 +82,14 @@ rotate(a=-90, v=[0, 0, 1])
    translate([-15/2, coin_dia/5, 0])
     linear_extrude(height=top_height+centre_height)
      DIGIT_ZERO();
+
+//rotate(a=0, v=[0, 0, 1])
+ translate([0, -coin_dia/2+1, 0])
+  scale([0.3, 0.3, 1])
+   translate([-14/2, coin_dia/5, 0])
+    linear_extrude(height=top_height+centre_height)
+     LATIN_SMALL_LETTER_B();
+
 
 module perl() {
  difference() {
