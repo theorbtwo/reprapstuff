@@ -88,7 +88,7 @@ rotate(a=-90, v=[0, 0, 1])
   scale([0.3, 0.3, 1])
    translate([-14/2, coin_dia/5, 0])
     linear_extrude(height=top_height+centre_height)
-     LATIN_SMALL_LETTER_B();
+     LATIN_SMALL_LETTER_C();
 
 
 module perl() {
