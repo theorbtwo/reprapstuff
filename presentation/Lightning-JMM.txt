@@ -1,0 +1,65 @@
+Reprap, started in a uni.
+
+  A long time ago, in a university fairly close ... (Bath)
+
+What is a reprap? (3d-printer)
+
+Have been following the project since the beginning.
+
+Waiting for advancement.. and cheaper kits.
+
+Tried to build one from scratch + electronic kits (McWire) - failed ... 
+
+Eventually decided to buy a full kit.
+
+   Image of reprapsource + price tag. Alongside dimension printer + price tag.
+
+Not quite a reprap, it's a repstrap.
+
+   Can't build it's own parts, but can build reprap parts. Project aims for full replication, but can't make steel parts or electronics, but is being wored on.
+
+Print things! Thingiverse. 
+
+    Download, slice (what's that?), print, use.
+
+Design your own things, OpenSCAD.
+
+    High level programming language to describe shapes geometrically (CSG), (which takes more than 5 mins to explain)
+    Images?
+
+Doesn't take a nice way to output text. Designed a sundial.
+
+    Parametric, can set variables for your location, re-run program, get correct sundial for you! (thats not easy in traditional modelling programs).
+
+Sundial needs text, numbers for the hours.
+
+    But, we can program! Take a freetype font, find the outline data, convert it to openSCAD format. There's a perl module! Font::FreeType2.
+
+First attempt looks something like this.. And this.. 
+
+    Creating rectangles along the edges, not so pretty..
+
+Sometimes, my GF is cleverer ... She suggested using polygons instead. 
+
+    Much better, but still not quite right, how to handle curves? (See letter P)
+
+Treat curves like lines, works for most fonts ... 
+
+    Truetype actually uses bezier curves.. Oh look, another Perl module! Math::Bezier (Pardon my french)
+
+This thing is reaaally slow.. it's slower for Russian than english.. and slower again for Japaneses??
+
+    In fact it's slower the higher the unicode codepoint goes.. Maybe there's a module for that?? Nope.
+
+    Lots and lots of elsifs .. Easy to generate, slow to run, end up with as many elsifs to traverse as the codepoint we're trying to get to.
+
+We can do this better, by log 2 of number of glyphs in font.
+
+    How many glyphs in Arial? New code! Looks more complicated, is more complicated, runs much much faster.. It's a compiler, we care much more about how well it works.
+
+Finished sundial!
+
+
+
+    
+
