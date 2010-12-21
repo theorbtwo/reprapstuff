@@ -1,9 +1,9 @@
-inner_height = 40;
-spindle_dia = 20;
-walls_dia = 50;
+inner_height = 25;
+spindle_dia = 12;
+walls_dia = 30;
 walls_height = 5;
 tie_hole_dia = 3;
-bevel_height = 10;
+bevel_height = 6;
 shaft_dia = 6.35;
 shaft_flat_dia = 5.8;
 shaft_height = 17.2;
