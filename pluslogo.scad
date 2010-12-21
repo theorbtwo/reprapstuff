@@ -1,21 +1,28 @@
-connector_dia = 124.33/3;
+full();
 
-// Note that this is in real mm, not jumbo mm.
-support_r = 1;
-support_step = 15;
+module full () {
+ connector_dia = 4.9;
+ hole_dia = 2;
 
-// support(-21, 21, -21, 22, -18, 25);
-// support(-20, 21, -5, 5, -18, 25);
-// support(-5, 5, -20, 21, -18, 25);
+ plus();
 
-// under central +.
-translate([2, 2, -20]) cylinder(h=20, r=support_r);
+ $fn=20;
 
-// under brackets
-translate([-20, 4, -18]) cylinder(h=8, r=support_r);
-translate([20, 4,  -18]) cylinder(h=8, r=support_r);
-translate([4, 20,  -18]) cylinder(h=8, r=support_r);
-translate([2, -20, -18]) cylinder(h=8, r=support_r);
+ difference () {
+  rotate(a=90, v=[1, 0, 0])
+   cylinder(r=connector_dia/2, h=30);
+
+  translate([0, -(30-connector_dia/2), 0])
+   rotate(a=90, v=[0, 1, 0])
+    cylinder(h=connector_dia*2, r=hole_dia/2, center=true);
+ }
+
+ translate([-20, 0, 0])
+  rotate(a=90, v=[0, 1, 0])
+   cylinder(r=connector_dia/2, h=40);
+}
+
+/*
 
 rotate(a=14.108, v=[1, 0, 0])
 rotate(a=-14.108, v=[0, 1, 0]) {
@@ -37,7 +44,7 @@ rotate(a=-14.108, v=[0, 1, 0]) {
   }
  }
 }
- 
+
 module support(minx, maxx, miny, maxy, minz, maxz) {
  for (xi = [0 : ((maxx-minx)/support_step)]) {
   for (yi = [0 : ((maxy-miny)/support_step)]) {
@@ -48,10 +55,13 @@ module support(minx, maxx, miny, maxy, minz, maxz) {
  }
 }
 
+*/
+ 
 
 module plus() {
- translate([-875, 812.5, 0])
-  linear_extrude(file = "pluslogo.dxf", height=124.33, center=true);
+ scale(1/24.8)
+  translate([-875, 812.5, 0])
+   linear_extrude(file = "pluslogo.dxf", height=124.33, center=true);
 }
 
 module torus(small, big) {
